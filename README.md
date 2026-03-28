@@ -1,1 +1,1002 @@
-# Exit-velocity-
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Exit Velocity</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+```
+    :root {
+        --bg: #1a1a2e;
+        --card: #16213e;
+        --accent: #0f3460;
+        --highlight: #e94560;
+        --success: #16c79a;
+        --warning: #f9a825;
+        --text: #eaeaea;
+        --muted: #a0a0a0;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    /* Header */
+    .header {
+        background: var(--card);
+        padding: 20px;
+        border-bottom: 2px solid var(--accent);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .header h1 {
+        font-size: 28px;
+        background: linear-gradient(135deg, var(--highlight), var(--success));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+        margin-bottom: 5px;
+    }
+
+    .header-subtitle {
+        text-align: center;
+        color: var(--muted);
+        font-size: 13px;
+    }
+
+    .stats-bar {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid var(--accent);
+    }
+
+    .stat {
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 32px;
+        font-weight: bold;
+        color: var(--success);
+        display: block;
+        line-height: 1;
+    }
+
+    .stat-label {
+        font-size: 11px;
+        color: var(--muted);
+        text-transform: uppercase;
+        margin-top: 4px;
+    }
+
+    /* Navigation */
+    .nav {
+        display: flex;
+        background: var(--card);
+        border-bottom: 1px solid var(--accent);
+        position: sticky;
+        top: 88px;
+        z-index: 99;
+    }
+
+    .nav-btn {
+        flex: 1;
+        padding: 15px 5px;
+        background: none;
+        border: none;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .nav-btn.active {
+        color: var(--highlight);
+        box-shadow: inset 0 -3px 0 var(--highlight);
+    }
+
+    /* Content */
+    .content {
+        padding: 15px;
+        padding-bottom: 100px;
+    }
+
+    /* Phase Cards */
+    .phase-card {
+        background: var(--card);
+        border-radius: 12px;
+        margin-bottom: 12px;
+        overflow: hidden;
+        border-left: 4px solid var(--accent);
+        transition: all 0.3s ease;
+    }
+
+    .phase-card.active {
+        border-left-color: var(--success);
+        box-shadow: 0 0 20px rgba(22, 199, 154, 0.1);
+    }
+
+    .phase-card.expanded {
+        border-left-color: var(--highlight);
+    }
+
+    .phase-header {
+        padding: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .phase-title-group {
+        flex: 1;
+    }
+
+    .phase-title {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .phase-subtitle {
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 8px;
+    }
+
+    .phase-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .badge {
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .badge-active {
+        background: var(--success);
+        color: var(--bg);
+    }
+
+    .badge-pending {
+        background: var(--warning);
+        color: var(--bg);
+    }
+
+    .duration {
+        font-size: 11px;
+        color: var(--muted);
+    }
+
+    .progress-ring {
+        width: 50px;
+        height: 50px;
+        position: relative;
+    }
+
+    .progress-ring svg {
+        transform: rotate(-90deg);
+    }
+
+    .progress-ring-bg {
+        fill: none;
+        stroke: var(--accent);
+        stroke-width: 4;
+    }
+
+    .progress-ring-fill {
+        fill: none;
+        stroke: var(--success);
+        stroke-width: 4;
+        stroke-linecap: round;
+        transition: stroke-dashoffset 0.5s ease;
+    }
+
+    .progress-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .phase-body {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    .phase-card.expanded .phase-body {
+        max-height: 1000px;
+    }
+
+    .phase-content {
+        padding: 0 16px 16px;
+    }
+
+    .objective {
+        color: var(--highlight);
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--accent);
+    }
+
+    /* Actions */
+    .action-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .action-item {
+        display: flex;
+        align-items: center;
+        padding: 14px;
+        background: var(--bg);
+        border-radius: 10px;
+        border: 1px solid var(--accent);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .action-item:active {
+        transform: scale(0.98);
+    }
+
+    .action-item.completed {
+        opacity: 0.6;
+        border-color: var(--success);
+    }
+
+    .checkbox {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 2px solid var(--muted);
+        margin-right: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        transition: all 0.2s;
+        flex-shrink: 0;
+    }
+
+    .action-item.completed .checkbox {
+        background: var(--success);
+        border-color: var(--success);
+        color: var(--bg);
+    }
+
+    .action-content {
+        flex: 1;
+    }
+
+    .action-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 3px;
+    }
+
+    .action-item.completed .action-title {
+        text-decoration: line-through;
+        color: var(--muted);
+    }
+
+    .action-week {
+        font-size: 11px;
+        color: var(--highlight);
+        font-weight: 500;
+    }
+
+    /* Checkpoints */
+    .checkpoint {
+        background: rgba(22, 199, 154, 0.1);
+        border: 1px solid var(--success);
+        border-radius: 10px;
+        padding: 16px;
+        margin-top: 16px;
+    }
+
+    .checkpoint-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--success);
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .gate {
+        display: flex;
+        align-items: center;
+        padding: 10px 12px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        font-size: 13px;
+    }
+
+    .gate:last-child {
+        margin-bottom: 0;
+    }
+
+    .gate-green {
+        background: rgba(22, 199, 154, 0.2);
+        border-left: 3px solid var(--success);
+    }
+
+    .gate-yellow {
+        background: rgba(249, 168, 37, 0.2);
+        border-left: 3px solid var(--warning);
+    }
+
+    .gate-red {
+        background: rgba(233, 69, 96, 0.2);
+        border-left: 3px solid var(--highlight);
+    }
+
+    .gate-label {
+        font-weight: 700;
+        margin-right: 8px;
+        min-width: 60px;
+    }
+
+    /* Matrix View */
+    .matrix-section {
+        margin-bottom: 24px;
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--highlight);
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .comparison-table {
+        background: var(--card);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .table-row {
+        display: flex;
+        padding: 12px;
+        border-bottom: 1px solid var(--accent);
+        font-size: 12px;
+    }
+
+    .table-row:last-child {
+        border-bottom: none;
+    }
+
+    .table-row.selected {
+        background: rgba(22, 199, 154, 0.1);
+    }
+
+    .table-cell {
+        flex: 1;
+        padding: 0 4px;
+    }
+
+    .table-cell:first-child {
+        flex: 2;
+        font-weight: 600;
+    }
+
+    .table-header {
+        background: var(--accent);
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 10px;
+        letter-spacing: 0.5px;
+    }
+
+    .risk-high { color: var(--highlight); font-weight: 600; }
+    .risk-med { color: var(--warning); font-weight: 600; }
+    .risk-low { color: var(--success); font-weight: 600; }
+
+    .selected-badge {
+        display: inline-block;
+        background: var(--success);
+        color: var(--bg);
+        font-size: 9px;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-left: 6px;
+        font-weight: 700;
+    }
+
+    /* Schedule View */
+    .timeline {
+        position: relative;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 38px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--accent);
+    }
+
+    .time-slot {
+        display: flex;
+        margin-bottom: 12px;
+        position: relative;
+    }
+
+    .time-label {
+        width: 50px;
+        font-size: 11px;
+        color: var(--muted);
+        padding-top: 12px;
+        font-weight: 500;
+    }
+
+    .time-content {
+        flex: 1;
+        margin-left: 20px;
+    }
+
+    .activity-card {
+        background: var(--card);
+        padding: 14px;
+        border-radius: 10px;
+        border-left: 4px solid var(--accent);
+        position: relative;
+    }
+
+    .activity-card.critical {
+        border-left-color: var(--highlight);
+        background: rgba(233, 69, 96, 0.05);
+    }
+
+    .activity-card.family {
+        border-left-color: var(--success);
+    }
+
+    .activity-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .activity-priority {
+        font-size: 10px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+
+    .activity-card.critical .activity-priority {
+        color: var(--highlight);
+    }
+
+    .activity-card.family .activity-priority {
+        color: var(--success);
+    }
+
+    /* Legend */
+    .legend {
+        background: var(--card);
+        padding: 16px;
+        border-radius: 12px;
+        margin-top: 24px;
+    }
+
+    .legend-title {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        color: var(--text);
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+        font-size: 13px;
+        color: var(--muted);
+    }
+
+    .legend-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    /* Start Button */
+    .start-section {
+        background: var(--card);
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .start-text {
+        font-size: 14px;
+        color: var(--muted);
+        margin-bottom: 16px;
+        line-height: 1.6;
+    }
+
+    .btn-primary {
+        background: var(--highlight);
+        color: white;
+        border: none;
+        padding: 16px 32px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.2s;
+    }
+
+    .btn-primary:active {
+        transform: scale(0.98);
+        opacity: 0.9;
+    }
+
+    /* Hidden */
+    .hidden {
+        display: none !important;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--accent);
+        border-radius: 3px;
+    }
+
+    /* iOS Safe Area */
+    @supports (padding-top: env(safe-area-inset-top)) {
+        .header {
+            padding-top: calc(20px + env(safe-area-inset-top));
+        }
+        
+        .nav {
+            top: calc(88px + env(safe-area-inset-top));
+        }
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="header">
+        <h1>Exit Velocity</h1>
+        <div class="header-subtitle">$57K → $80K → $150K+ | 247lbs → 225lbs</div>
+        <div class="stats-bar">
+            <div class="stat">
+                <span class="stat-value" id="overall-progress">0%</span>
+                <div class="stat-label">Overall</div>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="phase-progress">0%</span>
+                <div class="stat-label">Phase 1</div>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="current-month">M0</span>
+                <div class="stat-label">Month</div>
+            </div>
+        </div>
+    </div>
+
+```
+<nav class="nav">
+    <button class="nav-btn active" onclick="showTab('roadmap', event)">Roadmap</button>
+    <button class="nav-btn" onclick="showTab('matrix', event)">Matrix</button>
+    <button class="nav-btn" onclick="showTab('schedule', event)">Schedule</button>
+</nav>
+
+<main class="content" id="main-content">
+    <!-- Content injected by JS -->
+</main>
+
+<script>
+    // Data
+    const appData = {
+        phases: [
+            {
+                id: 'phase1',
+                title: 'PLATFORM BUILDING',
+                subtitle: '$80K Job Acquisition',
+                status: 'active',
+                duration: 'Months 0-6',
+                objective: 'Secure $80K+ role with tuition benefits',
+                actions: [
+                    { id: 'p1a1', title: 'Resume Rebuild', week: 'Week 1', completed: false },
+                    { id: 'p1a2', title: 'LinkedIn Activation', week: 'Week 2', completed: false },
+                    { id: 'p1a3', title: 'Target Mapping', week: 'Week 3', completed: false },
+                    { id: 'p1a4', title: 'Application Blitz', week: 'Week 4', completed: false },
+                    { id: 'p1a5', title: 'Network Expansion', week: 'Months 2-3', completed: false },
+                    { id: 'p1a6', title: 'Interview Close', week: 'Months 4-6', completed: false }
+                ],
+                checkpoint: {
+                    month: 6,
+                    gates: [
+                        { label: 'GREEN', text: '$80K+ with tuition → Proceed', type: 'green' },
+                        { label: 'YELLOW', text: '$80K+, no tuition → Negotiate', type: 'yellow' },
+                        { label: 'RED', text: 'No offers → Internal pivot', type: 'red' }
+                    ]
+                }
+            },
+            {
+                id: 'phase2',
+                title: 'STABILIZATION',
+                subtitle: 'Employment & Tuition Activation',
+                status: 'pending',
+                duration: 'Months 6-18',
+                objective: '12 months strong performance, tuition app submitted',
+                actions: [
+                    { id: 'p2a1', title: 'Performance Excellence', week: 'Months 6-12', completed: false },
+                    { id: 'p2a2', title: 'Tuition Application', week: 'Month 12', completed: false },
+                    { id: 'p2a3', title: 'Schedule Negotiation', week: 'Month 12', completed: false },
+                    { id: 'p2a4', title: 'Marriage Maintenance', week: 'Ongoing', completed: false }
+                ]
+            },
+            {
+                id: 'phase3',
+                title: 'ACCELERATION',
+                subtitle: "Master's Execution",
+                status: 'pending',
+                duration: 'Months 18-42',
+                objective: "Master's complete, LPC-eligible, marriage intact",
+                actions: [
+                    { id: 'p3a1', title: 'Year 1: Coursework', week: '18-30', completed: false },
+                    { id: 'p3a2', title: 'Year 2: Practicum', week: '30-42', completed: false },
+                    { id: 'p3a3', title: 'Year 3: Internship', week: '42-54', completed: false },
+                    { id: 'p3a4', title: 'Licensure Prep', week: 'Month 54', completed: false }
+                ]
+            },
+            {
+                id: 'phase4',
+                title: 'HARVEST',
+                subtitle: '$150K+ Integration',
+                status: 'pending',
+                duration: 'Month 42+',
+                objective: '$150K+ blended income, psychology practice launched',
+                actions: [
+                    { id: 'p4a1', title: 'Hybrid Career', week: 'Month 42', completed: false },
+                    { id: 'p4a2', title: 'Physical Target', week: 'Month 42', completed: false },
+                    { id: 'p4a3', title: 'Family System', week: 'Month 42', completed: false },
+                    { id: 'p4a4', title: 'Optionality', week: 'Month 48', completed: false }
+                ]
+            }
+        ],
+        paths: [
+            { name: "Master's Now (Loans)", timeline: '3 years', risk: 'HIGH', roi: '$400K', selected: false },
+            { name: 'Platform First', timeline: '4.5 years', risk: 'MED', roi: '$500K', selected: true },
+            { name: 'Corporate Only', timeline: '2 years', risk: 'LOW', roi: '$350K', selected: false },
+            { name: 'Hard Pivot (PhD)', timeline: '7 years', risk: 'CRIT', roi: '$200K', selected: false }
+        ],
+        schedule: [
+            { time: '5:30 AM', activity: 'Wake, coffee', priority: 'NON-NEGOTIABLE', type: 'critical' },
+            { time: '5:45-6:30', activity: 'GYM (Power Rack)', priority: 'NON-NEGOTIABLE', type: 'critical' },
+            { time: '6:30-7:00', activity: 'Shower, protein', priority: 'FIXED', type: 'normal' },
+            { time: '7:00-8:30', activity: 'Kids breakfast, school prep', priority: 'FAMILY', type: 'family' },
+            { time: '9:00-5:00', activity: 'Work (remote)', priority: 'INCOME', type: 'normal' },
+            { time: '5:30-8:00', activity: 'Kids activities', priority: 'FAMILY', type: 'family' },
+            { time: '8:00-9:00', activity: 'Kids bed, couple time', priority: 'MARRIAGE', type: 'family' },
+            { time: '9:00-10:00', activity: 'Job Search (1 night/week)', priority: 'PHASE 1', type: 'normal' },
+            { time: '10:00 PM', activity: 'Sleep (7.5 hrs)', priority: 'RECOVERY', type: 'critical' }
+        ]
+    };
+
+    // State
+    let state = {
+        phases: appData.phases,
+        expandedPhase: 'phase1',
+        currentTab: 'roadmap',
+        startDate: localStorage.getItem('ev_startDate') || null
+    };
+
+    // Load saved progress
+    const saved = localStorage.getItem('ev_progress');
+    if (saved) {
+        try {
+            const progress = JSON.parse(saved);
+            state.phases.forEach(phase => {
+                const savedPhase = progress.find(p => p.id === phase.id);
+                if (savedPhase) {
+                    phase.actions.forEach(action => {
+                        const savedAction = savedPhase.actions.find(a => a.id === action.id);
+                        if (savedAction) action.completed = savedAction.completed;
+                    });
+                }
+            });
+        } catch(e) {}
+    }
+
+    // Helpers
+    function calculateProgress() {
+        const total = state.phases.reduce((a, p) => a + p.actions.length, 0);
+        const completed = state.phases.reduce((a, p) => a + p.actions.filter(x => x.completed).length, 0);
+        return { overall: Math.round((completed / total) * 100), completed, total };
+    }
+
+    function getPhaseProgress(phaseId) {
+        const phase = state.phases.find(p => p.id === phaseId);
+        const completed = phase.actions.filter(a => a.completed).length;
+        return Math.round((completed / phase.actions.length) * 100);
+    }
+
+    function saveProgress() {
+        const progress = state.phases.map(p => ({
+            id: p.id,
+            actions: p.actions.map(a => ({ id: a.id, completed: a.completed }))
+        }));
+        localStorage.setItem('ev_progress', JSON.stringify(progress));
+    }
+
+    function getMonthNumber() {
+        if (!state.startDate) return 0;
+        const start = new Date(state.startDate);
+        const now = new Date();
+        return Math.max(0, Math.floor((now - start) / (1000 * 60 * 60 * 24 * 30)) + 1);
+    }
+
+    // Render functions
+    function renderProgressRing(progress) {
+        const circumference = 2 * Math.PI * 20;
+        const offset = circumference - (progress / 100) * circumference;
+        return `
+            <div class="progress-ring">
+                <svg width="50" height="50" viewBox="0 0 50 50">
+                    <circle class="progress-ring-bg" cx="25" cy="25" r="20"/>
+                    <circle class="progress-ring-fill" cx="25" cy="25" r="20" 
+                        stroke-dasharray="${circumference}" 
+                        stroke-dashoffset="${offset}"/>
+                </svg>
+                <span class="progress-text">${progress}%</span>
+            </div>
+        `;
+    }
+
+    function renderRoadmap() {
+        const progress = calculateProgress();
+        document.getElementById('overall-progress').textContent = progress.overall + '%';
+        document.getElementById('phase-progress').textContent = getPhaseProgress('phase1') + '%';
+        document.getElementById('current-month').textContent = 'M' + getMonthNumber();
+
+        if (!state.startDate) {
+            return `
+                <div class="start-section">
+                    <div class="start-text">
+                        Ready to begin the journey from $57K to $150K+?<br>
+                        Platform first. Then build. Then harvest.
+                    </div>
+                    <button class="btn-primary" onclick="startJourney()">Start Journey</button>
+                </div>
+                ${renderPhaseCards()}
+            `;
+        }
+
+        return renderPhaseCards();
+    }
+
+    function renderPhaseCards() {
+        return state.phases.map(phase => {
+            const isExpanded = state.expandedPhase === phase.id;
+            const progress = getPhaseProgress(phase.id);
+            
+            return `
+                <div class="phase-card ${phase.status} ${isExpanded ? 'expanded' : ''}" 
+                     onclick="togglePhase('${phase.id}')">
+                    <div class="phase-header">
+                        <div class="phase-title-group">
+                            <div class="phase-title">${phase.title}</div>
+                            <div class="phase-subtitle">${phase.subtitle}</div>
+                            <div class="phase-meta">
+                                <span class="badge badge-${phase.status}">${phase.status}</span>
+                                <span class="duration">${phase.duration}</span>
+                            </div>
+                        </div>
+                        ${renderProgressRing(progress)}
+                    </div>
+                    <div class="phase-body">
+                        <div class="phase-content">
+                            <div class="objective">${phase.objective}</div>
+                            <div class="action-list">
+                                ${phase.actions.map(action => `
+                                    <div class="action-item ${action.completed ? 'completed' : ''}" 
+                                         onclick="event.stopPropagation(); toggleAction('${phase.id}', '${action.id}')">
+                                        <div class="checkbox">${action.completed ? '&#10003;' : ''}</div>
+                                        <div class="action-content">
+                                            <div class="action-title">${action.title}</div>
+                                            <div class="action-week">${action.week}</div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            ${phase.checkpoint ? `
+                                <div class="checkpoint">
+                                    <div class="checkpoint-title">Month ${phase.checkpoint.month} Decision Gate</div>
+                                    ${phase.checkpoint.gates.map(gate => `
+                                        <div class="gate gate-${gate.type}">
+                                            <span class="gate-label">${gate.label}</span>
+                                            <span>${gate.text}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function renderMatrix() {
+        const progress = calculateProgress();
+        document.getElementById('overall-progress').textContent = progress.overall + '%';
+        document.getElementById('phase-progress').textContent = '-';
+        document.getElementById('current-month').textContent = 'M' + getMonthNumber();
+
+        return `
+            <div class="matrix-section">
+                <h2 class="section-title">Path Comparison</h2>
+                <div class="comparison-table">
+                    <div class="table-row table-header">
+                        <div class="table-cell">Path</div>
+                        <div class="table-cell">Time</div>
+                        <div class="table-cell">Risk</div>
+                        <div class="table-cell">ROI</div>
+                    </div>
+                    ${appData.paths.map(path => `
+                        <div class="table-row ${path.selected ? 'selected' : ''}">
+                            <div class="table-cell">
+                                ${path.name}
+                                ${path.selected ? '<span class="selected-badge">SELECTED</span>' : ''}
+                            </div>
+                            <div class="table-cell">${path.timeline}</div>
+                            <div class="table-cell risk-${path.risk.toLowerCase()}">${path.risk}</div>
+                            <div class="table-cell">${path.roi}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+
+            <div class="matrix-section">
+                <h2 class="section-title">Decision Checkpoints</h2>
+                <div class="checkpoint">
+                    <div class="checkpoint-title">Month 3: Job Search Momentum</div>
+                    <div class="gate gate-green"><span class="gate-label">GREEN</span>3+ interviews scheduled</div>
+                    <div class="gate gate-yellow"><span class="gate-label">YELLOW</span>1-2 interviews, slow response</div>
+                    <div class="gate gate-red"><span class="gate-label">RED</span>0 interviews, expand target</div>
+                </div>
+                <div class="checkpoint" style="margin-top: 12px;">
+                    <div class="checkpoint-title">Month 6: Offer Negotiation</div>
+                    <div class="gate gate-green"><span class="gate-label">GREEN</span>$80K+ with tuition &rarr; Proceed</div>
+                    <div class="gate gate-yellow"><span class="gate-label">YELLOW</span>$80K+, no tuition &rarr; Negotiate</div>
+                    <div class="gate gate-red"><span class="gate-label">RED</span>No offers &rarr; Internal pivot</div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderSchedule() {
+        const progress = calculateProgress();
+        document.getElementById('overall-progress').textContent = progress.overall + '%';
+        document.getElementById('phase-progress').textContent = '-';
+        document.getElementById('current-month').textContent = 'M' + getMonthNumber();
+
+        return `
+            <div class="timeline">
+                ${appData.schedule.map(slot => `
+                    <div class="time-slot">
+                        <div class="time-label">${slot.time}</div>
+                        <div class="time-content">
+                            <div class="activity-card ${slot.type}">
+                                <div class="activity-title">${slot.activity}</div>
+                                <div class="activity-priority">${slot.priority}</div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            <div class="legend">
+                <div class="legend-title">Priority Key</div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: var(--highlight)"></div>
+                    Non-negotiable (Gym, Sleep)
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: var(--success)"></div>
+                    Family/Marriage
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: var(--accent)"></div>
+                    Flexible/Variable
+                </div>
+            </div>
+        `;
+    }
+
+    // Actions
+    function showTab(tab, e) {
+        state.currentTab = tab;
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        if (e && e.target) e.target.classList.add('active');
+        
+        const content = document.getElementById('main-content');
+        if (tab === 'roadmap') content.innerHTML = renderRoadmap();
+        else if (tab === 'matrix') content.innerHTML = renderMatrix();
+        else if (tab === 'schedule') content.innerHTML = renderSchedule();
+    }
+
+    function togglePhase(phaseId) {
+        state.expandedPhase = state.expandedPhase === phaseId ? null : phaseId;
+        document.getElementById('main-content').innerHTML = renderRoadmap();
+    }
+
+    function toggleAction(phaseId, actionId) {
+        const phase = state.phases.find(p => p.id === phaseId);
+        const action = phase.actions.find(a => a.id === actionId);
+        action.completed = !action.completed;
+        saveProgress();
+        document.getElementById('main-content').innerHTML = renderRoadmap();
+    }
+
+    function startJourney() {
+        state.startDate = new Date().toISOString();
+        localStorage.setItem('ev_startDate', state.startDate);
+        document.getElementById('main-content').innerHTML = renderRoadmap();
+    }
+
+    // Init
+    document.getElementById('main-content').innerHTML = renderRoadmap();
+</script>
+```
+
+</body>
+</html>
